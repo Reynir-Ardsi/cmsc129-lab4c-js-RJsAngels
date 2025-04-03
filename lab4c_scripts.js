@@ -21,9 +21,10 @@ function generateStudentNumber() {
 function validateInput(name, age, email) {
     let errors = [];
 
-    if (!/^[a-zA-Z]+\s[a-zA-Z]+$/.test(name) || name.length <= 5) {
-        errors.push("Name must be more than 5 characters and contain a space.");
+    if (!/^[a-zA-Z]+(\s[a-zA-Z](\.)?|\s[a-zA-Z]+)+$/i.test(name) || name.length <= 5) {
+        errors.push("Name must be more than 5 characters and contain at least two words.");
     }
+
     if (isNaN(age) || age < 18 || age > 99) {
         errors.push("Age must be a number between 18 and 99.");
     }
