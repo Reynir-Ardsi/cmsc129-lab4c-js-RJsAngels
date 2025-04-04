@@ -1,13 +1,34 @@
 let students = [];
 
 function time_now() {
-    const today = new Date();
-    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
-    const formattedDate = today.toLocaleDateString('en-US', options);
-    const time = today.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    const date = new Date();
 
-    document.getElementById('date_display').innerHTML =
-        `Today is ${formattedDate}.<br>The current time is ${time}.`;
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
+    const dayOfWeek = dayNames[date.getDay()];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();    
+
+    let hours = date.getHours();
+    let minutes = date.getMinutes().toString().padStart(2, '0');
+    let period = "";
+
+    switch (true) {
+        case (hours >= 12):
+            period = "PM";
+            break;
+        default:
+            period = "AM";
+            break;
+    }
+
+    hours = (hours % 12) || 12;
+
+    const timeString = `${hours}:${minutes} ${period}`;
+
+    document.getElementById('date_display').innerText = `Today is ${month} ${day}, ${year}, ${dayOfWeek}. \n The current time is ${timeString}.`;
 }
 
 function generateStudentNumber() {
@@ -22,14 +43,14 @@ function validateInput(name, age, email) {
     let errors = [];
 
     if (!/^[a-zA-Z]+(\s[a-zA-Z](\.)?|\s[a-zA-Z]+)+$/i.test(name) || name.length <= 5) {
-        errors.push("Name must be more than 5 characters and contain at least two words.");
+        errors.push("Please enter a full name (first and last name).");
     }
 
     if (isNaN(age) || age < 18 || age > 99) {
         errors.push("Age must be a number between 18 and 99.");
     }
     if (!email.endsWith("@up.edu.ph")) {
-        errors.push("Email must end with @up.edu.ph.");
+        errors.push("Email must end with @up.edu.ph");
     }
 
     return errors;
@@ -37,29 +58,84 @@ function validateInput(name, age, email) {
 
 function add_student() {
     let name = document.getElementById("name").value.trim();
-    let age = parseInt(document.getElementById("age").value);
+    let age = document.getElementById("age").value.trim();
     let email = document.getElementById("email").value.trim();
     let course = document.getElementById("course").value;
 
-    let errors = validateInput(name, age, email);
+    let errors = [];
+
+    if (!name) errors.push("Please fill out the Name field.");
+    if (!age) errors.push("Please fill out the Age field.");
+    if (!email) errors.push("Please fill out the Email field.");
+
     if (errors.length > 0) {
         alert(errors.join("\n"));
+        return;
+    }
+
+    let validationErrors = validateInput(name, parseInt(age), email);
+    if (validationErrors.length > 0) {
+        alert(validationErrors.join("\n"));
         return;
     }
 
     let student = {
         studentNumber: generateStudentNumber(),
         name: name,
-        age: age,
+        age: parseInt(age),
         email: email,
         course: course
     };
 
     students.push(student);
-    alert("Student added successfully! Student Number: " + student.studentNumber);
+
+    let message = `The following student has been added:\n\n` +
+                  `Student Number: ${student.studentNumber}\n` +
+                  `Name: ${student.name}\n` +
+                  `Age: ${student.age}\n` +
+                  `Email: ${student.email}\n` +
+                  `Course: ${student.course}`;
+
+    alert(message);
 
     document.getElementById("student_form").reset();
 }
+
+function display_list() {
+    let studentList = document.getElementById("student_list");
+    
+    if (students.length === 0) {
+        studentList.innerHTML = "<p>No students registered.</p>";
+        return;
+    }
+
+    let tableHTML = `
+        <table>
+            <tr>
+                <th>Student Number</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>UP Mail</th>
+                <th>Course</th>
+            </tr>
+    `;
+
+    students.forEach(student => {
+        tableHTML += `
+            <tr>
+                <td>${student.studentNumber}</td>
+                <td>${student.name}</td>
+                <td>${student.age}</td>
+                <td>${student.email}</td>
+                <td>${student.course}</td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `</table>`;
+    studentList.innerHTML = tableHTML;
+}
+
 
 function find_student() {
     let searchID = document.getElementById("search_id").value.trim();
@@ -67,32 +143,16 @@ function find_student() {
 
     if (student) {
         document.getElementById("search_result").innerHTML = `
-            <strong>Student Found:</strong><br>
-            Student Number: ${student.studentNumber}<br>
-            Name: ${student.name}<br>
-            Age: ${student.age}<br>
-            Email: ${student.email}<br>
-            Course: ${student.course}
+            <div class="student-info">
+                <p><strong>Student Found:</strong></p>
+                <div class="info-row"><strong>Student Number</strong> <span>${student.studentNumber}</span></div>
+                <div class="info-row"><strong>Name</strong> <span>${student.name}</span></div>
+                <div class="info-row"><strong>Age</strong> <span>${student.age}</span></div>
+                <div class="info-row"><strong>UP Mail</strong> <span>${student.email}</span></div>
+                <div class="info-row"><strong>Course</strong> <span>${student.course}</span></div>
+            </div>
         `;
     } else {
         document.getElementById("search_result").innerText = "Student record does not exist.";
     }
-}
-
-function display_list() {
-    let studentList = document.getElementById("student_list");
-    studentList.innerHTML = "";
-
-    if (students.length === 0) {
-        studentList.innerHTML = "<li>No students registered.</li>";
-        return;
-    }
-
-    students.forEach(student => {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = `
-            <strong>${student.studentNumber}</strong>: ${student.name}, ${student.age} years old, ${student.email}, ${student.course}
-        `;
-        studentList.appendChild(listItem);
-    });
 }
