@@ -59,9 +59,6 @@ function validateInput(name, age, email) {
     } else if (!email.endsWith("@up.edu.ph")) {
         errors.push("Email must end with @up.edu.ph");
     }
-    rj@up.edu.ph
-    rj
-    up
     return errors;
 }
 
