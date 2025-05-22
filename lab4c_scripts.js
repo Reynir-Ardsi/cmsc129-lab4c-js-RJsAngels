@@ -9,7 +9,7 @@ function time_now() {
     const dayOfWeek = dayNames[date.getDay()];
     const month = monthNames[date.getMonth()];
     const day = date.getDate();
-    const year = date.getFullYear();    
+    const year = date.getFullYear();
 
     let hours = date.getHours();
     let minutes = date.getMinutes().toString().padStart(2, '0');
@@ -49,10 +49,19 @@ function validateInput(name, age, email) {
     if (isNaN(age) || age < 18 || age > 99) {
         errors.push("Age must be a number between 18 and 99.");
     }
-    if (!email.endsWith("@up.edu.ph")) {
+
+    let emailParts = email.split("@");
+    let emailName = emailParts[0];
+    let emailDomain = emailParts[1];
+
+    if (!emailName || emailName.trim() === "") {
+        errors.push("Not a valid Email");
+    } else if (!email.endsWith("@up.edu.ph")) {
         errors.push("Email must end with @up.edu.ph");
     }
-
+    rj@up.edu.ph
+    rj
+    up
     return errors;
 }
 
@@ -90,11 +99,11 @@ function add_student() {
     students.push(student);
 
     let message = `The following student has been added:\n\n` +
-                  `Student Number: ${student.studentNumber}\n` +
-                  `Name: ${student.name}\n` +
-                  `Age: ${student.age}\n` +
-                  `Email: ${student.email}\n` +
-                  `Course: ${student.course}`;
+                    `Student Number: ${student.studentNumber}\n` +
+                    `Name: ${student.name}\n` +
+                    `Age: ${student.age}\n` +
+                    `Email: ${student.email}\n` +
+                    `Course: ${student.course}`;
 
     alert(message);
 
@@ -115,7 +124,7 @@ function display_list() {
                 <th>Student Number</th>
                 <th>Name</th>
                 <th>Age</th>
-                <th>UP Mail</th>
+                <th>UP Mail </th>
                 <th>Course</th>
             </tr>
     `;
@@ -148,7 +157,7 @@ function find_student() {
                 <div class="info-row"><strong>Student Number</strong> <span>${student.studentNumber}</span></div>
                 <div class="info-row"><strong>Name</strong> <span>${student.name}</span></div>
                 <div class="info-row"><strong>Age</strong> <span>${student.age}</span></div>
-                <div class="info-row"><strong>UP Mail</strong> <span>${student.email}</span></div>
+                <div class="info-row"><strong>UP Mail </strong> <span>${student.email}</span></div>
                 <div class="info-row"><strong>Course</strong> <span>${student.course}</span></div>
             </div>
         `;
